@@ -1,3 +1,5 @@
+#used for visualization of feature maps
+
 import torch.nn as nn
 import torch
 
@@ -90,12 +92,6 @@ class ResNet(nn.Module):
         outputs.append(x)
         x = self.layer4(x)
         outputs.append(x)
-
-        #if self.include_top:
-        #    x = self.avgpool(x)
-        #    x = torch.flatten(x, 1)
-        #    x = self.fc(x)
-        #    outputs.append(x)
 
         return outputs
 
