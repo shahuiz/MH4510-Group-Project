@@ -128,14 +128,6 @@ def main():
                                  figure=fig,
                                  global_step=epoch)
 
-        # add conv1 weights into tensorboard
-        #tb_writer.add_histogram(tag="conv1",
-        #                        values=net.conv1.weight,
-        #                        global_step=epoch)
-        #tb_writer.add_histogram(tag="layer1/block0/conv1",
-        #                        values=net.layer1[0].conv1.weight,
-        #                        global_step=epoch)
-
         # save weights
         torch.save(net.state_dict(), "./weights/1020-1818-16-0.001-model-{}.pth".format(epoch))
 
