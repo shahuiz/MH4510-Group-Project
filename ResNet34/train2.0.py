@@ -1,5 +1,3 @@
-##跑的是这个不要跑错了
-
 import os
 import json
 import random
@@ -64,7 +62,6 @@ def main():
 
     ####
     model = resnet34(num_classes=4).to(device)
-    # 将模型写入tensorboard
     init_img = torch.zeros((1, 3, 224, 224), device=device)
     tb_writer.add_graph(model, init_img)
     ####
