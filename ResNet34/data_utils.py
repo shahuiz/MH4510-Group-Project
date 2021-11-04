@@ -24,12 +24,12 @@ def read_split_data(root: str, val_rate: float = 0.2):
     with open('class_indices.json', 'w') as json_file:
         json_file.write(json_str)
 
-    train_images_path = []  # 存储训练集的所有图片路径
-    train_images_label = []  # 存储训练集图片对应索引信息
-    val_images_path = []  # 存储验证集的所有图片路径
-    val_images_label = []  # 存储验证集图片对应索引信息
-    every_class_num = []  # 存储每个类别的样本总数
-    supported = [".jpg", ".JPG", ".png", ".PNG"]  # 支持的文件后缀类型
+    train_images_path = []  
+    train_images_label = [] 
+    val_images_path = []  
+    val_images_label = []  
+    every_class_num = []  
+    supported = [".jpg", ".JPG", ".png", ".PNG"]  
     # go through images in each folder
     for cla in tumor_class:
         cla_path = os.path.join(root, cla)
@@ -69,13 +69,13 @@ def plot_data_loader_image(data_loader):
         for i in range(plot_num):
             # [C, H, W] -> [H, W, C]
             img = images[i].numpy().transpose(1, 2, 0)
-            # 反Normalize操作
+            # inverse normalization
             img = (img * [0.229, 0.224, 0.225] + [0.485, 0.456, 0.406]) * 255
             label = labels[i].item()
             plt.subplot(1, plot_num, i+1)
             plt.xlabel(class_indices[str(label)])
-            plt.xticks([])  # 去掉x轴的刻度
-            plt.yticks([])  # 去掉y轴的刻度
+            plt.xticks([])  
+            plt.yticks([])  
             plt.imshow(img.astype('uint8'))
         plt.show()
 
@@ -124,11 +124,11 @@ def plot_class_preds(net,
                 assert len(split_info) == 2, "label format error, expect file_name and class_name"
                 image_name, class_name = split_info
                 image_path = os.path.join(images_dir, image_name)
-                # 如果文件不存在，则跳过
+               
                 if not os.path.exists(image_path):
                     print("not found {}, skip.".format(image_path))
                     continue
-                # 如果读取的类别不在给定的类别内，则跳过
+                
                 if class_name not in class_indices.keys():
                     print("unrecognized category {}, skip".format(class_name))
                     continue
@@ -167,13 +167,13 @@ def plot_class_preds(net,
     # width, height
     fig = plt.figure(figsize=(num_imgs * 2.5, 3), dpi=100)
     for i in range(num_imgs):
-        # 1：子图共1行，num_imgs:子图共num_imgs列，当前绘制第i+1个子图
+        
         ax = fig.add_subplot(1, num_imgs, i+1, xticks=[], yticks=[])
 
         # CHW -> HWC
         npimg = images[i].cpu().numpy().transpose(1, 2, 0)
 
-        # 将图像还原至标准化之前
+        # inverse normalization
         # mean:[0.485, 0.456, 0.406], std:[0.229, 0.224, 0.225]
         npimg = (npimg * [0.229, 0.224, 0.225] + [0.485, 0.456, 0.406]) * 255
         plt.imshow(npimg.astype('uint8'))
