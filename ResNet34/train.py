@@ -19,11 +19,9 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
 
-    ####
     tb_writer = SummaryWriter(log_dir="runs/tumor_experiment")
     if os.path.exists("./weights") is False:
         os.makedirs("./weights")
-    ####
 
     data_transform = {
         "train": transforms.Compose([transforms.RandomResizedCrop(224),
@@ -60,11 +58,9 @@ def main():
 
     print("using {} images for training, {} images for validation.".format(train_num, val_num))
 
-    ####
     model = resnet34(num_classes=4).to(device)
     init_img = torch.zeros((1, 3, 224, 224), device=device)
     tb_writer.add_graph(model, init_img)
-    ####
 
     net = resnet34()
     # load pretrain weights
@@ -77,9 +73,6 @@ def main():
     in_channel = net.fc.in_features
     net.fc = nn.Linear(in_channel, 4)
     net.to(device)
-
-    # define loss function
-    #loss_function = nn.CrossEntropyLoss()
 
     # construct an optimizer
     params = [p for p in net.parameters() if p.requires_grad]
