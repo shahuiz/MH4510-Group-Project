@@ -75,7 +75,7 @@ def main(args):
                             transform=data_transform["val"])
 
     batch_size = args.batch_size
-    nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of workers of CPU
+    nw = min([os.cpu_count(), batch_size if batch_size > 1 else 0, 8])  # number of dataloader workers
     print('Using {} dataloader workers every process'.format(nw))
     train_loader = torch.utils.data.DataLoader(train_dataset,
                                                batch_size=batch_size,
@@ -124,9 +124,9 @@ def main(args):
 
     pg = [p for p in model.parameters() if p.requires_grad]
     # define the optimizer as SGD or Adam(But here we choose SGD)
-    optimizer = optim.SGD(pg, lr=args.lr, momentum=0.9, weight_decay=5E-5)
-    lf = lambda x: ((1 + math.cos(x * math.pi / args.epochs)) / 2) * (1 - args.lrf) + args.lrf
-    scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
+    optimizer = optim.SGD(pg, lr=args.learningratio, momentum=0.9, weight_decay=5E-5)
+    learningf = lambda x: ((1 + math.cos(x * math.pi / args.epochs)) / 2) * (1 - args.learningratiof) + args.learningratiof
+    scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=learningf)
 
     for epoch in range(args.epochs):
         # train
@@ -149,7 +149,7 @@ def main(args):
         tb_writer.add_scalar(tags[1], train_acc, epoch)
         tb_writer.add_scalar(tags[2], val_loss, epoch)
         tb_writer.add_scalar(tags[3], val_acc, epoch)
-        tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["lr"], epoch)
+        tb_writer.add_scalar(tags[4], optimizer.param_groups[0]["learningratio"], epoch)
 
         torch.save(model.state_dict(), "./weights/modele-{}.pth".format(epoch))
 
@@ -158,15 +158,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_classes', type=int, default=4)   # number of classfication classes, we have 4 different classes
     parser.add_argument('--epochs', type=int, default=20)     # num of epochs
-    parser.add_argument('--batch-size', type=int, default=32) # batch size
+    parser.add_argument('--batch_size', type=int, default=32) # batch size
     # learning rate of the optimizer
-    parser.add_argument('--lr', type=float, default=0.001)
-    parser.add_argument('--lrf', type=float, default=0.01)
+    parser.add_argument('--learningratio', type=float, default=0.001)
+    parser.add_argument('--learningratiof', type=float, default=0.01)
 
     # the directory of the dataset
-    parser.add_argument('--data-path', type=str,
+    parser.add_argument('--data_path', type=str,
                         default="C:\\Users\\11194\\OneDrive\\Desktop\\archive\\Training")
-    parser.add_argument('--model-name', default='', help='create model name')
+    parser.add_argument('--model_name', default='', help='create model name')
 
     # Pre-trained weight path(here we use vit-large pretrained weight)
     parser.add_argument('--weights', type=str,
@@ -174,7 +174,7 @@ if __name__ == '__main__':
                         help='initial weights path')
 
     # whether freeze the weights
-    parser.add_argument('--freeze-layers', type=bool, default=True)
+    parser.add_argument('--freeze_layers', type=bool, default=True)
     parser.add_argument('--device', default='cuda:0', help='device id (i.e. 0 or 0,1 or cpu)')
 
     all_args = parser.parse_args()
